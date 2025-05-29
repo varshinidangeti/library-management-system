@@ -1,0 +1,148 @@
+/* Modernized Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+/* Container */
+.container {
+    margin: 20px auto;
+    padding: 25px;
+    max-width: 1200px;
+    background-color: #ffffff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Headings */
+h2, h3, h4, h5 {
+    color: #222;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Table */
+.table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th, .table td {
+    padding: 14px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.table th {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Cards */
+.card {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+    padding: 25px;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* Buttons */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.3s ease;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.btn:hover {
+    transform: scale(1.08);
+}
+
+.btn-info {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #e63946;
+    color: white;
+}
+
+.btn-success {
+    background-color: #2ec4b6;
+    color: white;
+}
+
+/* Carousel */
+.carousel-inner img {
+    height: 500px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.3s ease-in-out;
+    font-size: 16px;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Alerts */
+.alert {
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.alert-warning {
+    background-color: #ffeeba;
+    color: #856404;
+}
+
+/* Smooth Transitions */
+*, *::before, *::after {
+    transition: all 0.3s ease-in-out;
+}

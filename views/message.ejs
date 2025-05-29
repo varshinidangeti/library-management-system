@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message | Library Management System</title>
+    <script src="https://kit.fontawesome.com/496b9c5c00.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #f59e0b;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --accent: #0ea5e9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/img/home.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .message-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2.5rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .icon-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .message-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+        }
+
+        .message-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem 1.8rem;
+            border-radius: 30px;
+            border: none;
+            font-weight: bold;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            background: var(--secondary);
+            color: var(--dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                width: 95%;
+            }
+
+            .message-card {
+                padding: 2rem;
+            }
+
+            .message-text {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="message-card">
+        <div class="icon-container">
+            <i class="fa-solid fa-circle-info message-icon"></i>
+        </div>
+
+        <div class="message-text">
+            <%= message %>
+        </div>
+    </div>
+
+    <button class="back-button" onclick="goBack()">
+        <i class="fa-solid fa-arrow-left"></i> Go Back
+    </button>
+</div>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+</body>
+</html>

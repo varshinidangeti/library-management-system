@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Issued Books</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        .book-container {
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .header-section {
+            background-color: #f8f9fa;
+            padding: 25px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .back-button {
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+        }
+
+        .empty-state {
+            padding: 50px 20px;
+            color: #6c757d;
+        }
+
+        .book-image {
+            width: 50px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .overdue {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .days-remaining {
+            font-size: 0.85rem;
+        }
+
+        .btn-group-vertical > .btn {
+            margin-bottom: 0.5rem;
+            width: 100%;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<%- include('../layout/user_header') %>
+
+<div class="header-section">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>My Issued Books</h1>
+            <button class="btn btn-outline-primary back-button" onclick="window.history.back()">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="book-container">
+        <% if (books.length === 0) { %>
+            <div class="empty-state text-center">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="9" y1="3" x2="9" y2="21"></line>
+                </svg>
+                <h3 class="mt-4">No Books Issued</h3>
+                <p class="text-muted">You haven't borrowed any books yet.</p>
+                <a href="/user/index" class="btn btn-primary mt-3">Browse Books</a>
+            </div>
+        <% } else { %>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Book</th>
+                        <th>Details</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Fine</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% books.forEach(book => { %>
+                        <%
+                            const issueDate = new Date(book.issue_date);
+                            const dueDate = new Date(book.due_date);
+                            const today = new Date();
+
+                            const diffTime = dueDate - today;
+                            const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                            const isOverdue = daysRemaining < 0;
+                            const fineAmount = parseFloat(book.fine);
+                            const hasFine = fineAmount > 0;
+                        %>
+                        <tr id="book-row-<%= book.request_id %>">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="/img/<%= book.book_img %>" alt="<%= book.book_name %>" class="book-image me-3">
+                                    <div>
+                                        <div class="fw-bold"><%= book.book_name %></div>
+                                        <div class="text-muted small">Book ID: #<%= book.book_id %></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-muted">by <%= book.book_author %></div>
+                                <div class="small text-muted">Request ID: #<%= book.request_id %></div>
+                            </td>
+                            <td><%= issueDate.toLocaleDateString() %></td>
+                            <td class="<%= isOverdue ? 'overdue' : '' %>">
+                                <%= dueDate.toLocaleDateString() %>
+                                <% if (!isOverdue) { %>
+                                    <div class="days-remaining text-muted"><%= daysRemaining %> days remaining</div>
+                                <% } else { %>
+                                    <div class="days-remaining text-danger"><%= Math.abs(daysRemaining) %> days overdue</div>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (hasFine) { %>
+                                    <span class="badge bg-danger">$<%= fineAmount.toFixed(2) %></span>
+                                <% } else { %>
+                                    <span class="badge bg-success">No Fine</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div class="btn-group-vertical">
+                                    <% if (hasFine) { %>
+                                        <a href="/user/checkout/<%= book.request_id %>" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-credit-card me-1"></i>Pay Fine
+                                        </a>
+                                        <button class="btn btn-sm btn-secondary" disabled>
+                                            <i class="bi bi-arrow-return-left me-1"></i>Return Book
+                                            <small class="d-block text-muted">(Pay fine first)</small>
+                                        </button>
+                                    <% } else { %>
+                                        <button class="btn btn-sm btn-primary return-book-btn"
+                                                data-request-id="<%= book.request_id %>"
+                                                data-book-name="<%= book.book_name %>"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#returnModal">
+                                            <i class="bi bi-arrow-return-left me-1"></i>Return Book
+                                        </button>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Return Book Modal -->
+<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnModalLabel">Return Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="return-request-id">
+                <p>Are you sure you want to return <strong id="return-book-name"></strong>?</p>
+
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="book-condition-check">
+                    <label class="form-check-label" for="book-condition-check">
+                        I confirm that the book is in good condition without any damage.
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirm-return-btn" disabled>
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Confirm Return
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast container for notifications -->
+<div class="toast-container">
+    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
+         aria-atomic="true" id="successToast">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-check-circle me-2"></i>
+                <span id="success-message"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive"
+         aria-atomic="true" id="errorToast">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                <span id="error-message"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<%- include('../layout/footer') %>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check for URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const messageParam = urlParams.get('message');
+        const errorParam = urlParams.get('error');
+
+        if (messageParam) {
+            document.getElementById('success-message').textContent = messageParam;
+            const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+            successToast.show();
+        }
+
+        if (errorParam) {
+            document.getElementById('error-message').textContent = errorParam;
+            const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+            errorToast.show();
+        }
+
+        // Set up return book buttons
+        const returnButtons = document.querySelectorAll('.return-book-btn');
+        returnButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const requestId = this.getAttribute('data-request-id');
+                const bookName = this.getAttribute('data-book-name');
+
+                // Set modal values
+                document.getElementById('return-request-id').value = requestId;
+                document.getElementById('return-book-name').textContent = bookName;
+
+                // Clear checkbox
+                document.getElementById('book-condition-check').checked = false;
+
+                // Disable confirm button initially
+                document.getElementById('confirm-return-btn').disabled = true;
+            });
+        });
+
+        // Enable/disable confirm button based on checkbox
+        document.getElementById('book-condition-check').addEventListener('change', function() {
+            document.getElementById('confirm-return-btn').disabled = !this.checked;
+        });
+
+        // Confirm return button
+        document.getElementById('confirm-return-btn').addEventListener('click', function() {
+            const requestId = document.getElementById('return-request-id').value;
+            const button = this;
+            const spinner = button.querySelector('.spinner-border');
+
+            // Disable button and show spinner
+            button.disabled = true;
+            spinner.classList.remove('d-none');
+
+            // Send AJAX request to return the book
+            fetch(`/user/returnBook?requestId=${requestId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('returnModal'));
+                        modal.hide();
+
+                        // Show success message
+                        document.getElementById('success-message').textContent =
+                            `Book returned successfully. Thank you for using our library!`;
+
+                        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                        successToast.show();
+
+                        // Remove the book from the list
+                        const row = document.getElementById(`book-row-${requestId}`);
+                        row.classList.add('fade-out');
+
+                        // Check if this was the last book
+                        setTimeout(() => {
+                            row.remove();
+                            const remainingBooks = document.querySelectorAll('[id^="book-row-"]');
+                            if (remainingBooks.length === 0) {
+                                location.reload(); // Reload to show empty state
+                            }
+                        }, 500);
+                    } else {
+                        throw new Error(data.message || 'Failed to return book');
+                    }
+                })
+                .catch(error => {
+                    // Hide spinner and re-enable button
+                    spinner.classList.add('d-none');
+                    button.disabled = false;
+
+                    // Show error message
+                    document.getElementById('error-message').textContent =
+                        error.message || `Failed to return book. Please try again or contact library staff.`;
+
+                    const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+                    errorToast.show();
+
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('returnModal'));
+                    modal.hide();
+                });
+        });
+    });
+</script>
+</body>
+</html>

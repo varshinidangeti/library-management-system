@@ -1,0 +1,456 @@
+<%- include('../layout/user_header') %>
+<style>
+    :root {
+        --primary-color: #5468ff;
+        --secondary-color: #f8f9fa;
+        --accent-color: #ff6b6b;
+        --text-color: #333;
+        --border-radius: 8px;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        color: var(--text-color);
+        background-color: #f5f7fa;
+    }
+
+    .page-header {
+        background-color: white;
+        padding: 20px 0;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+    }
+
+    .page-header h2 {
+        margin: 0;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .container {
+        max-width: 1400px;
+        padding: 0 20px;
+        width: 100%;
+    }
+
+    /* Books Display Section */
+    .books-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .book-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: var(--transition);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .book-image {
+        height: 280px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .book-info {
+        padding: 18px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        color: var(--text-color);
+    }
+
+    .book-details {
+        margin-bottom: 15px;
+        flex-grow: 1;
+    }
+
+    .book-detail {
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .book-detail-label {
+        font-weight: 500;
+        color: #666;
+        width: 70px;
+    }
+
+    .book-price {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .book-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-view {
+        flex: 1;
+        padding: 10px 15px;
+        background-color: #e9ecef;
+        color: #495057;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .btn-view:hover {
+        background-color: #dee2e6;
+    }
+
+    .btn-cart {
+        flex: 1;
+        padding: 10px 15px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .btn-cart:hover {
+        background-color: #4254e8;
+    }
+
+    .btn-delete {
+        flex: 1;
+        padding: 10px 15px;
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .btn-delete:hover {
+        background-color: #ff5252;
+    }
+
+    .results-info {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .results-count {
+        font-weight: 500;
+    }
+
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .book-badge {
+        display: inline-block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-right: 8px;
+    }
+
+    .book-description {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.5;
+    }
+
+    /* Enhanced Responsive Styles */
+    @media (max-width: 1200px) {
+        .books-container {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }
+    }
+
+    @media (max-width: 991px) {
+        .books-container {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+
+        .book-image {
+            height: 240px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .books-container {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .book-image {
+            height: 220px;
+        }
+
+        .book-title {
+            font-size: 1rem;
+        }
+
+        .book-detail {
+            font-size: 0.85rem;
+        }
+
+        .book-actions {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 15px;
+        }
+
+        .books-container {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .book-image {
+            height: 200px;
+        }
+
+        .book-info {
+            padding: 15px;
+        }
+
+        .page-header {
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .results-info {
+            margin-bottom: 15px;
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <h2>Requested Books</h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="results-info">
+                <span class="results-count" id="resultsCount"><%= books.length %> books requested</span>
+            </div>
+
+            <div class="books-container" id="booksContainer">
+                <% if (books && books.length > 0) { %>
+                    <% books.forEach(book => { %>
+                        <div class="book-card" id="book-card-<%= book.book_id %>">
+                            <img src="/img/<%= book.book_img %>" class="book-image" alt="<%= book.book_name %>"
+                                 onerror="this.src='/img/default.jpg'">
+                            <div class="book-info">
+                                <h4 class="book-title"><%= book.book_name %></h4>
+                                <div class="book-details">
+                                    <div class="book-detail">
+                                        <span class="book-detail-label">Author:</span>
+                                        <span><%= book.book_author %></span>
+                                    </div>
+                                    <div class="book-detail">
+                                        <span class="book-detail-label">Category:</span>
+                                        <span>
+                                          <span class="book-badge"><%= book.book_category %></span>
+                                        </span>
+                                    </div>
+                                    <% if (book.book_quantity > 0) { %>
+                                        <div class="book-detail">
+                                            <span class="book-detail-label">Stock:</span>
+                                            <span><%= book.book_quantity %> available</span>
+                                        </div>
+                                    <% } %>
+                                    <% if (book.book_purchase > 0) { %>
+                                        <div class="book-detail">
+                                            <span class="book-detail-label">Sold:</span>
+                                            <span><%= book.book_purchase %> copies</span>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <p class="book-description"><%= book.book_desc %></p>
+                                <div class="book-price">
+                                    $<%= parseFloat(book.book_price).toLocaleString('en-US') %></div>
+                                <div class="book-actions">
+                                    <button class="btn-delete" onclick="deleteRequest('<%= book.book_id %>')">Delete
+                                        Request
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-results">
+                        <h4>No requested books found</h4>
+                        <p>There are currently no books in your requested list.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification for "Request Deleted" -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+    <div id="deleteToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+        <div class="toast-header">
+            <strong class="me-auto">Book Store</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Request has been deleted successfully!
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function viewBook(bookId) {
+        window.location.href = `/user/book/${bookId}`;
+    }
+
+    function addToCart(bookId, bookName) {
+        fetch('/user/add-to-cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bookId: bookId,
+                quantity: 1
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                showAddedToCart();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function deleteRequest(bookId) {
+        fetch(`/user/deleteBookIssueRequest/${bookId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the book card from the UI
+                    const bookCard = document.getElementById(`book-card-${bookId}`);
+                    if (bookCard) {
+                        bookCard.remove();
+                    }
+
+                    // Update the count of books requested
+                    const resultsCount = document.getElementById('resultsCount');
+                    const currentCount = parseInt(resultsCount.textContent.split(' ')[0]) - 1;
+                    resultsCount.textContent = `${currentCount} books requested`;
+
+                    // If no books left, show the no results message
+                    if (currentCount === 0) {
+                        const booksContainer = document.getElementById('booksContainer');
+                        booksContainer.innerHTML = `
+                            <div class="no-results">
+                                <h4>No requested books found</h4>
+                                <p>There are currently no books in your requested list.</p>
+                            </div>
+                        `;
+                    }
+
+                    // Show toast notification
+                    showDeletedToast();
+                } else {
+                    console.error('Error:', data.error);
+                    alert('Failed to delete the book request. Please try again.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred while trying to delete the request.');
+            });
+    }
+
+    function showAddedToCart() {
+        const toastEl = document.getElementById('cartToast');
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+
+    function showDeletedToast() {
+        const toastEl = document.getElementById('deleteToast');
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+
+    // Check if the book image exists, otherwise use default
+    document.addEventListener('DOMContentLoaded', function () {
+        const bookImages = document.querySelectorAll('.book-image');
+        bookImages.forEach(img => {
+            img.onerror = function () {
+                this.src = '/img/default.jpg';
+            }
+        });
+    });
+</script>
+
+<%- include('../layout/user_footer') %>

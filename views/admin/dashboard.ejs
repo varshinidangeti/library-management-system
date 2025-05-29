@@ -1,0 +1,294 @@
+<%- include('../layout/header') %>
+
+<style>
+    .user-dashboard {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #f5f7fa;
+        padding: 30px 0;
+    }
+
+    .dashboard-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .dashboard-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0;
+    }
+
+    .search-container {
+        position: relative;
+        max-width: 300px;
+        width: 100%;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 16px;
+        padding-left: 40px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #3182ce;
+        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+    }
+
+    .user-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .user-table thead th {
+        background-color: #f7fafc;
+        color: #4a5568;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: left;
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .user-table thead th:first-child {
+        border-top-left-radius: 8px;
+    }
+
+    .user-table thead th:last-child {
+        border-top-right-radius: 8px;
+    }
+
+    .user-table tbody tr {
+        transition: background-color 0.2s;
+    }
+
+    .user-table tbody tr:hover {
+        background-color: #f7fafc;
+    }
+
+    .user-table tbody td {
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #2d3748;
+        font-size: 14px;
+    }
+
+    .user-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .user-table tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 8px;
+    }
+
+    .user-table tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 8px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .badge-male {
+        background-color: #ebf8ff;
+        color: #3182ce;
+    }
+
+    .badge-female {
+        background-color: #fef5ff;
+        color: #b83280;
+    }
+
+    .badge-other {
+        background-color: #f0fff4;
+        color: #38a169;
+    }
+
+    .btn-view {
+        background-color: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-view:hover {
+        background-color: #3182ce;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 24px;
+    }
+
+    .pagination-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        margin: 0 4px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .pagination-item:hover {
+        background-color: #e2e8f0;
+    }
+
+    .pagination-item.active {
+        background-color: #4299e1;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .search-container {
+            max-width: 100%;
+            margin-top: 16px;
+        }
+
+        .user-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
+
+<div class="user-dashboard">
+    <div class="container">
+        <div class="dashboard-card">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">User Management</h1>
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search users..." id="userSearch">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="user-table" id="userTable">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>City</th>
+                        <th>Phone</th>
+                        <th>Gender</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <td><%= user.name %></td>
+                            <td><%= user.email %></td>
+                            <td><%= user.city %></td>
+                            <td><%= user.phone %></td>
+                            <td>
+                                <% if (user.gender === 'Male') { %>
+                                    <span class="badge badge-male">Male</span>
+                                <% } else if (user.gender === 'Female') { %>
+                                    <span class="badge badge-female">Female</span>
+                                <% } else { %>
+                                    <span class="badge badge-other"><%= user.gender %></span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <button class="btn-view" onclick="viewDetails('<%= user.id %>')">
+                                    <i class="fas fa-eye mr-1"></i> View
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <div class="pagination-item"><i class="fas fa-chevron-left"></i></div>
+                <div class="pagination-item active">1</div>
+                <div class="pagination-item">2</div>
+                <div class="pagination-item">3</div>
+                <div class="pagination-item"><i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../layout/footer') %>
+
+<script>
+    // Maintain the original functionality
+    function viewDetails(userId) {
+        window.location.href = `/admin/userOrders/${userId}`;
+    }
+
+    // Add search functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('userSearch');
+        const table = document.getElementById('userTable');
+        const rows = table.getElementsByTagName('tr');
+
+        searchInput.addEventListener('keyup', function () {
+            const query = searchInput.value.toLowerCase();
+
+            // Start from index 1 to skip the header row
+            for (let i = 1; i < rows.length; i++) {
+                let found = false;
+                const cells = rows[i].getElementsByTagName('td');
+
+                for (let j = 0; j < cells.length - 1; j++) { // Skip the action column
+                    const cellText = cells[j].textContent.toLowerCase();
+
+                    if (cellText.indexOf(query) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+        });
+    });
+</script>

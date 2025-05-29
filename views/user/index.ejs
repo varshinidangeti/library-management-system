@@ -1,0 +1,603 @@
+<%- include('../layout/user_header') %>
+<style>
+    :root {
+        --primary-color: #5468ff;
+        --secondary-color: #f8f9fa;
+        --accent-color: #ff6b6b;
+        --text-color: #333;
+        --border-radius: 12px;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        color: var(--text-color);
+        background-color: #f5f7fa;
+    }
+
+    /* Hero Carousel Section */
+    .hero-container {
+        margin-bottom: 60px;
+        position: relative;
+    }
+
+    .hero-carousel {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        height: 450px;
+    }
+
+    .carousel-item {
+        height: 450px;
+    }
+
+    .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7));
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 40px;
+        color: white;
+    }
+
+    .overlay h1 {
+        font-size: 2.6rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .overlay p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin-bottom: 25px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-btn {
+        display: inline-block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(84, 104, 255, 0.3);
+    }
+
+    .hero-btn:hover {
+        background-color: #4254e8;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(84, 104, 255, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .carousel-control-prev, .carousel-control-next {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0 20px;
+    }
+
+    .carousel-control-prev:hover, .carousel-control-next:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .carousel-indicators {
+        bottom: 20px;
+    }
+
+    .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin: 0 5px;
+    }
+
+    /* Popular Books Section */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 0 10px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-color);
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background-color: var(--primary-color);
+        border-radius: 2px;
+    }
+
+    .view-all-link {
+        color: var(--primary-color);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .view-all-link:hover {
+        color: #4254e8;
+        text-decoration: none;
+    }
+
+    .popular-books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
+    }
+
+    .book-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: var(--transition);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .book-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .book-image-container {
+        height: 260px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .book-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .book-card:hover .book-image {
+        transform: scale(1.05);
+    }
+
+    .bestseller-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    .book-info {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .book-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--text-color);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+    }
+
+    .book-author {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .book-category {
+        display: inline-block;
+        background-color: #f2f4f6;
+        color: #666;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 15px;
+    }
+
+    .book-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .book-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .book-stats {
+        display: flex;
+        gap: 15px;
+        margin: 15px 0;
+        font-size: 0.85rem;
+    }
+
+    .book-stat {
+        display: flex;
+        align-items: center;
+        color: #666;
+    }
+
+    .book-stat svg {
+        margin-right: 5px;
+        color: #999;
+    }
+
+    .book-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-view {
+        padding: 8px 15px;
+        background-color: #e9ecef;
+        color: #495057;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        flex: 1;
+    }
+
+    .btn-view:hover {
+        background-color: #dee2e6;
+    }
+
+    .btn-cart {
+        padding: 8px 15px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        flex: 1;
+    }
+
+    .btn-cart:hover {
+        background-color: #4254e8;
+    }
+
+    /* Toast notification for "Added to Cart" */
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1050;
+    }
+
+    .cart-toast {
+        background-color: white;
+        color: var(--text-color);
+        padding: 15px 20px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .cart-toast.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .toast-icon {
+        margin-right: 12px;
+        background-color: #e6f4ea;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #34a853;
+    }
+
+    .toast-content {
+        flex: 1;
+    }
+
+    .toast-title {
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .toast-message {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .toast-close {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 991px) {
+        .hero-carousel, .carousel-item {
+            height: 380px;
+        }
+
+        .overlay h1 {
+            font-size: 2.2rem;
+        }
+
+        .overlay p {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hero-carousel, .carousel-item {
+            height: 320px;
+        }
+
+        .overlay {
+            padding: 30px;
+        }
+
+        .overlay h1 {
+            font-size: 1.8rem;
+        }
+
+        .overlay p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .hero-btn {
+            padding: 10px 20px;
+        }
+
+        .popular-books-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-carousel, .carousel-item {
+            height: 280px;
+        }
+
+        .overlay h1 {
+            font-size: 1.5rem;
+        }
+
+        .popular-books-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+
+        .book-image-container {
+            height: 200px;
+        }
+
+        .book-info {
+            padding: 15px;
+        }
+
+        .book-title {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<!-- Toast Notification Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="container mt-4">
+    <!-- Hero Carousel Section -->
+    <div class="hero-container">
+        <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"
+                        aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="/img/home1.jpg" class="d-block w-100" alt="Library 1">
+                    <div class="overlay">
+                        <h1>Discover Your Next Favorite Book</h1>
+                        <p>Explore our vast collection of bestsellers, classics, and hidden gems</p>
+                        <a href="/user/books" class="hero-btn">Browse Catalog</a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/img/home2.jpg" class="d-block w-100" alt="Library 2">
+                    <div class="overlay">
+                        <h1>Books That Inspire</h1>
+                        <p>Find stories that will change your perspective and expand your horizons</p>
+                        <a href="/user/books" class="hero-btn">Explore Books</a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/img/home3.jpg" class="d-block w-100" alt="Library 3">
+                    <div class="overlay">
+                        <h1>Knowledge at Your Fingertips</h1>
+                        <p>Access a world of information with our extensive book collection</p>
+                        <a href="/user/books" class="hero-btn">Start Reading</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Popular Books Section -->
+    <div class="section-header">
+        <h2 class="section-title">Popular Books</h2>
+        <a href="/user/books" class="view-all-link">View All Books →</a>
+    </div>
+
+    <% if (books && books.length > 0) { %>
+        <div class="popular-books-grid">
+            <% books.forEach((book, index) => { %>
+                <div class="book-card">
+                    <div class="book-image-container">
+                        <img src="/img/<%= book.book_img %>" class="book-image" alt="<%= book.book_name %>">
+                        <% if (index < 3) { %>
+                            <div class="bestseller-badge">Bestseller</div>
+                        <% } %>
+                    </div>
+                    <div class="book-info">
+                        <div>
+                            <h3 class="book-title" id="<%= book.book_name %>"><%= book.book_name %></h3>
+                            <p class="book-author">by <%= book.book_author %></p>
+                            <span class="book-category"><%= book.book_category %></span>
+
+                            <div class="book-stats">
+                                <div class="book-stat">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-bag" viewBox="0 0 16 16">
+                                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                                    </svg>
+                                    <%= book.book_purchase %> sold
+                                </div>
+                                <div class="book-stat">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-box-seam" viewBox="0 0 16 16">
+                                        <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2l-2.218-.887zm3.564 1.426L5.596 5 8 5.961 14.154 3.5l-2.404-.961zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/>
+                                    </svg>
+                                    <%= book.book_quantity %> in stock
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="book-price">$<%= book.book_price %></div>
+                            <div class="book-actions">
+                                <button class="btn-view" onclick="viewBook('<%= book.book_id %>')">View</button>
+                                <button class="btn-cart"
+                                        onclick="addToCart('<%= book.book_id %>', '<%= book.book_name %>'); showAddedToCart('<%= book.book_name %>')">
+                                    Request Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="alert alert-info">
+            <p class="mb-0">No popular books available at the moment. Check back soon!</p>
+        </div>
+    <% } %>
+</div>
+<script src="/js/index.js"></script>
+<script>
+
+
+    // Modern toast notification
+    function showAddedToCart(bookName) {
+        const toastContainer = document.getElementById('toastContainer');
+
+        const toast = document.createElement('div');
+        toast.className = 'cart-toast';
+        toast.innerHTML = `
+      <div class="toast-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
+      </div>
+      <div class="toast-content">
+        <div class="toast-title">Request Added</div>
+        <div class="toast-message">${bookName} has been added to requests</div>
+      </div>
+      <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+    `;
+
+        toastContainer.appendChild(toast);
+
+        // Force reflow to enable transition
+        toast.offsetHeight;
+        toast.classList.add('show');
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 3000);
+    }
+
+    // Initialize Bootstrap carousel
+    document.addEventListener('DOMContentLoaded', function () {
+        const carousel = new bootstrap.Carousel(document.getElementById('heroCarousel'), {
+            interval: 5000
+        });
+    });
+</script>
+
+<%- include('../layout/user_footer') %>

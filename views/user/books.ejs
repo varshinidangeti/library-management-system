@@ -1,0 +1,518 @@
+<%- include('../layout/user_header') %>
+<style>
+    :root {
+        --primary-color: #5468ff;
+        --secondary-color: #f8f9fa;
+        --accent-color: #ff6b6b;
+        --text-color: #333;
+        --border-radius: 8px;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        color: var(--text-color);
+        background-color: #f5f7fa;
+    }
+
+    .page-header {
+        background-color: white;
+        padding: 20px 0;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+    }
+
+    .page-header h2 {
+        margin: 0;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .container {
+        max-width: 1400px;
+        padding: 0 20px;
+    }
+
+    /* Filter Section */
+    .filters-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 25px;
+        position: sticky;
+        top: 20px;
+    }
+
+    .filters-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .filters-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .filter-section {
+        margin-bottom: 25px;
+    }
+
+    .filter-section-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #555;
+        display: block;
+    }
+
+    .price-range-inputs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .price-range-inputs input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+    }
+
+    .category-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .category-checkbox {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .category-checkbox input {
+        margin-right: 8px;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        margin-bottom: 5px;
+    }
+
+    .btn-filter {
+        width: 100%;
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 500;
+        padding: 12px;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-filter:hover {
+        background-color: #4254e8;
+        transform: translateY(-2px);
+    }
+
+    .btn-reset {
+        width: 100%;
+        background-color: #e9ecef;
+        color: #495057;
+        font-weight: 500;
+        padding: 12px;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        margin-top: 10px;
+        transition: var(--transition);
+    }
+
+    .btn-reset:hover {
+        background-color: #dee2e6;
+    }
+
+    /* Books Display Section */
+    .books-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+    }
+
+    .book-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: var(--transition);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .book-image {
+        height: 280px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .book-info {
+        padding: 18px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        color: var(--text-color);
+    }
+
+    .book-details {
+        margin-bottom: 15px;
+        flex-grow: 1;
+    }
+
+    .book-detail {
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        display: flex;
+    }
+
+    .book-detail-label {
+        font-weight: 500;
+        color: #666;
+        width: 70px;
+    }
+
+    .book-price {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .book-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-view {
+        flex: 1;
+        padding: 10px 15px;
+        background-color: #e9ecef;
+        color: #495057;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .btn-view:hover {
+        background-color: #dee2e6;
+    }
+
+    .btn-cart {
+        flex: 1;
+        padding: 10px 15px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .btn-cart:hover {
+        background-color: #4254e8;
+    }
+
+    .results-info {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .results-count {
+        font-weight: 500;
+    }
+
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .filters-container {
+            margin-bottom: 30px;
+            position: static;
+        }
+
+        .category-checkboxes {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .books-container {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <h2>Book Catalog</h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Filter Section -->
+        <div class="col-lg-3 col-md-12">
+            <div class="filters-container">
+                <div class="filters-header">
+                    <h3 class="filters-title">Filters</h3>
+                    <button type="button" id="resetFilters" class="btn-sm btn-light">Reset All</button>
+                </div>
+
+                <form id="filterForm">
+                    <div class="filter-section">
+                        <span class="filter-section-title">Price Range (₹)</span>
+                        <div class="price-range-inputs">
+                            <input type="number" id="minPrice" name="minPrice" class="filter-input" placeholder="Min"
+                                   min="0">
+                            <input type="number" id="maxPrice" name="maxPrice" class="filter-input" placeholder="Max"
+                                   min="0">
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <span class="filter-section-title">Category</span>
+                        <div class="category-checkboxes">
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="action" name="category" value="Action">
+                                <label for="action">Action</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="crime" name="category" value="Crime">
+                                <label for="crime">Crime</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="mystery" name="category" value="Mystery">
+                                <label for="mystery">Mystery</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="thriller" name="category" value="Thriller">
+                                <label for="thriller">Thriller</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="fantasy" name="category" value="Fantasy">
+                                <label for="fantasy">Fantasy</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="science" name="category" value="Science & Technology">
+                                <label for="science">Science & Tech</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="horror" name="category" value="Horror">
+                                <label for="horror">Horror</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="romance" name="category" value="Romance">
+                                <label for="romance">Romance</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="fiction" name="category" value="Fiction">
+                                <label for="fiction">Fiction</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="youngAdult" name="category" value="Young Adult">
+                                <label for="youngAdult">Young Adult</label>
+                            </div>
+                            <div class="category-checkbox">
+                                <input type="checkbox" id="education" name="category" value="Education">
+                                <label for="education">Education</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <span class="filter-section-title">Author</span>
+                        <input type="text" id="author" name="author" class="filter-input"
+                               placeholder="Search by author">
+                    </div>
+
+                    <button type="button" class="btn-filter" onclick="applyFilters()">Apply Filters</button>
+                    <button type="button" class="btn-reset" id="clearFilters">Clear Filters</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Books Display Section -->
+        <div class="col-lg-9 col-md-12">
+            <div class="results-info">
+                <span class="results-count" id="resultsCount"><%= books.length %> books found</span>
+            </div>
+
+            <div class="books-container" id="booksContainer">
+                <% books.forEach(book => { %>
+                    <div class="book-card">
+                        <img src="/img/<%= book.book_img %>" class="book-image" alt="<%= book.book_name %>">
+                        <div class="book-info">
+                            <h4 class="book-title"><%= book.book_name %></h4>
+                            <div class="book-details">
+                                <div class="book-detail">
+                                    <span class="book-detail-label">Author:</span>
+                                    <span><%= book.book_author %></span>
+                                </div>
+                                <div class="book-detail">
+                                    <span class="book-detail-label">Category:</span>
+                                    <span><%= book.book_category %></span>
+                                </div>
+                            </div>
+                            <div class="book-price">$<%= book.book_price.toLocaleString('en-US') %></div>
+                            <div class="book-actions">
+                                <button class="btn-view" onclick="viewBook('<%= book.book_id %>')">View Details</button>
+                                <button class="btn-cart"
+                                        onclick="addToCart('<%= book.book_id %>', '<%= book.book_name %>'); showAddedToCart()">
+                                    Request Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification for "Added to Cart" -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+    <div id="cartToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+        <div class="toast-header">
+            <strong class="me-auto">Book Store</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Item added to your cart!
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/index.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Reset filters button
+        document.getElementById('resetFilters').addEventListener('click', function () {
+            document.getElementById('filterForm').reset();
+            applyFilters();
+        });
+
+        // Clear filters button
+        document.getElementById('clearFilters').addEventListener('click', function () {
+            document.getElementById('filterForm').reset();
+        });
+    });
+
+
+    function applyFilters() {
+        const minPrice = document.getElementById('minPrice').value || 0;
+        const maxPrice = document.getElementById('maxPrice').value || 50000;
+        const author = document.getElementById('author').value;
+
+        const categoryCheckboxes = document.querySelectorAll('input[name="category"]:checked');
+        const categories = Array.from(categoryCheckboxes).map(checkbox => checkbox.value);
+
+        const params = new URLSearchParams();
+        params.append('minPrice', minPrice);
+        params.append('maxPrice', maxPrice);
+
+        if (author) {
+            params.append('author', author);
+        }
+
+        categories.forEach(category => {
+            params.append('category', category);
+        });
+
+        fetch(`/user/filterBooks?${params.toString()}`)
+            .then(response => response.json())
+            .then(books => {
+                const booksContainer = document.getElementById('booksContainer');
+                const resultsCount = document.getElementById('resultsCount');
+
+                resultsCount.textContent = `${books.length} books found`;
+                booksContainer.innerHTML = '';
+
+                if (books.length === 0) {
+                    booksContainer.innerHTML = `
+            <div class="no-results">
+              <h4>No books match your criteria</h4>
+              <p>Try adjusting your filters to find more books.</p>
+            </div>
+          `;
+                    return;
+                }
+
+                books.forEach(book => {
+                    const bookElement = `
+            <div class="book-card">
+              <img src="/img/${book.book_img}" class="book-image" alt="${book.book_name}">
+              <div class="book-info">
+                <h4 class="book-title">${book.book_name}</h4>
+                <div class="book-details">
+                  <div class="book-detail">
+                    <span class="book-detail-label">Author:</span>
+                    <span>${book.book_author}</span>
+                  </div>
+                  <div class="book-detail">
+                    <span class="book-detail-label">Category:</span>
+                    <span>${book.book_category}</span>
+                  </div>
+                </div>
+                <div class="book-price">$${Number(book.book_price).toLocaleString('en-US')}</div>
+                <div class="book-actions">
+                  <button class="btn-view" onclick="viewBook('${book.book_id}')">View Details</button>
+                  <button class="btn-cart" onclick="addToCart('${book.book_id}', '${book.book_name}'); showAddedToCart()">Request Book</button>
+                </div>
+              </div>
+            </div>
+          `;
+                    booksContainer.insertAdjacentHTML('beforeend', bookElement);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+
+</script>
+
+<%- include('../layout/user_footer') %>

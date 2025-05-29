@@ -1,0 +1,153 @@
+<%- include('../layout/user_header') %>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h3 class="mb-0 fw-bold">Payment Information</h3>
+                </div>
+                <div class="card-body">
+                    <form id="checkoutForm" method="POST" action="/user/pay">
+                        <div class="mb-4">
+                            <h5 class="mb-3 border-bottom pb-2">Shipping Details</h5>
+                            <div class="mb-3">
+                                <label for="userName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="userName" name="userName"
+                                       placeholder="Enter your name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="userEmail" class="form-label">Email Address</label>
+                                <input type="email" class="form-control bg-light" id="userEmail" name="userEmail"
+                                       value="<%= user.email %>" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="userPhone" class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" id="userPhone" name="userPhone"
+                                       placeholder="Enter your phone number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="userAddress" class="form-label">Delivery Address</label>
+                                <input type="text" class="form-control" id="userAddress" name="userAddress"
+                                       placeholder="Enter your address" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="userCity" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="userCity" name="userCity"
+                                           placeholder="Enter your city" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="userPostalCode" class="form-label">Postal Code</label>
+                                    <input type="text" class="form-control" id="userPostalCode" name="userPostalCode"
+                                           placeholder="Enter postal code" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5 class="mb-3 border-bottom pb-2">Payment Details</h5>
+                            <div class="mb-3">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber" name="cardNumber"
+                                       placeholder="1234 5678 9012 3456" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="cardExpiry" class="form-label">Expiry Date</label>
+                                    <input type="text" class="form-control" id="cardExpiry" name="cardExpiry"
+                                           placeholder="MM/YY" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cardCvv" class="form-label">CVV</label>
+                                    <input type="text" class="form-control" id="cardCvv" name="cardCvv"
+                                           placeholder="123" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="otp" class="form-label">One-Time Password</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP"
+                                           required>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="sendOtp()">Send
+                                        OTP
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Complete Payment</button>
+
+                        <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
+                            <i class="bi bi-check-circle-fill me-2"></i> Payment successful! Your order has been placed.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getLastPathSegment() {
+        const urlPath = window.location.pathname;
+        return urlPath.split("/").pop(); // Gets the last segment
+    }
+
+    function sendOtp() {
+        const phoneNumber = document.getElementById('userPhone').value;
+        if (phoneNumber) {
+            fetch('/user/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({phoneNumber})
+            }).then(response => response.json()).then(data => {
+                if (data.success) {
+                    alert('OTP sent to your phone number');
+                } else {
+                    alert('Failed to send OTP');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        } else {
+            alert('Please enter your phone number');
+        }
+    }
+
+    document.getElementById('checkoutForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        fetch('/user/pay', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                requestId: getLastPathSegment(),
+                userName: document.getElementById('userName').value,
+                userPhone: document.getElementById('userPhone').value,
+                userEmail: document.getElementById('userEmail').value,
+                userAddress: document.getElementById('userAddress').value,
+                userCity: document.getElementById('userCity').value,
+                userPostalCode: document.getElementById('userPostalCode').value,
+                cardNumber: document.getElementById('cardNumber').value,
+                cardExpiry: document.getElementById('cardExpiry').value,
+                cardCvv: document.getElementById('cardCvv').value,
+                otp: document.getElementById('otp').value
+            })
+        }).then(response => response.json()).then(data => {
+            if (data.success) {
+                document.getElementById('successMessage').style.display = 'block';
+                window.scrollTo(0, document.body.scrollHeight);
+            } else {
+                alert('Payment failed: ' + data.message);
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+<script src="/js/index.js"></script>
+<%- include('../layout/user_footer') %>
